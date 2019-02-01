@@ -1,0 +1,29 @@
+Results from MoDec v1.0
+Run started on 2019-02-01 14:30:38
+Input peptide file:	test/testData.txt
+Output folder	test/test_out/
+n_peptides	8503
+n_weighted_peptides	2687.26
+pepL_min	12
+n_motifs	3
+L_motif	9
+With flat motif	1
+S_max	17
+alpha_prior	0.1
+With special initial conditions	0
+randNumbers_seed	38230811
+n_runs	4
+dLogL_conv	0.001
+n_iterations_perRun	277	662	697	1036
+Total runtime	53.9 seconds
+
+logL_bestRun	5704.505
+logL_eachRun (decreasing order)	5704.505	5647.536	5647.534	5646.96
+n_weighted_pep_per_motif_bestRun	407.9731	1426.342	638.7873
+n_weighted_pep_flatMotif_bestRun	214.1577
+
+runRank|motif_crun_vs_best	1_0	1_1	1_2	1_3	2_0	2_1	2_2	2_3	3_0	3_1	3_2	3_3
+1	5.72	0	2.94	10.1	4.64	3.45	0	9.3	3.44	8.47	7.07	0
+2	4.9	3.36	0.452	8.8	4.99	2.09	0.847	10.4	3.11	11	10	6.5
+3	4.9	3.37	0.453	8.8	4.98	2.09	0.845	10.4	3.11	11	10	6.5
+4	4.8	1.94	0.491	9.85	5.35	4.64	1.02	9.03	3.16	11	10	6.57

@@ -1,0 +1,179 @@
+
+###############
+# MoDec is a motif deconvolution software that finds the motifs
+# and corresponding binding core offsets desribing the data in a list
+# of peptides.
+#
+# MoDec can be used freely by academic groups for non-commercial purposes (see license).
+# The product is provided free of charge, and, therefore, on an "as is"
+#  basis, without warranty of any kind.
+#
+# FOR-PROFIT USERS
+# If you plan to use MoDec (version 1.0) in any for-profit
+# application, you are required to obtain a separate license.
+# To do so, please contact eauffarth@licr.org or lfoit@licr.org at the Ludwig Institute for  Cancer Research Ltd.
+#
+#
+# For scientific questions, please contact Julien Racle (julien.racle@unil.ch) or David Gfeller (David.Gfeller@unil.ch)
+#
+# Copyright (2019) Julien Racle
+###############
+
+############
+INSTALLATION
+############
+
+1) Download MoDec_1.0.zip file and move it to a directory
+of your choice, where you have writing permissions.
+
+2) Unzip MoDec_1.0.zip package.
+
+3) (Optional) In order to make an html report of the runs from MoDec and to
+  draw the logos from each motifs, you need R and some R-packages:
+    3a) Rscript needs to be in your path.
+    3b) You need to install the R-package ggseqlogo, based on the fork
+      found at https://github.com/GfellerLab/ggseqlogo.
+      For this, from within R, type the command:
+        devtools::install_github("gfellerlab/ggseqlogo")
+    3c) You also need the R-package htmlTable that can be found at
+      https://cran.r-project.org/web/packages/htmlTable/index.html Command
+      to insall from within R:
+        install.packages("htmlTable")
+
+4) To test your installation, make sure you are in MoDec_1.0/ directory and run
+the following command, depending on your operating system:
+
+  - Mac OS:   ./MoDec -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 4 --makeReport
+
+  - Unix:   ./MoDec_unix -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 4 --makeReport
+
+Running the software can take few minutes depending on data size and number
+of motifs.
+If you didn't do the optional step (3) above, the "--makeReport" option
+shouldn't be used as MoDec won't be able to build this report.
+Your folder test_out should contain the same elements than out_compare folder
+(with few differences about the timing and file location indicated within
+the results files).
+
+The testData.txt file corresponds to HLA-II peptidomics data (8715 unique peptides)
+obtained from the cell line CD165 for our study.
+
+######
+- Do not use spaces in your file or directory names.
+- Do not use other special characters (e.g., *, ?, %, &,...) in file or directory names.
+
+
+5) (Optional) To run MoDec from anywhere on your computer, make an alias of the
+MoDec executable (see above for which one depending on operating system) or put it
+to your path.
+
+
+########
+RUNNING
+########
+
+Command:
+MoDec -i input_file -o output_name  [additional options]
+
+* Input file (command: -i or --input):
+File listing all the peptides with one peptide per line. It can also be a fasta
+file (lines starting with ">" are skipped).
+
+* Output name (command: -o or --output):
+The name of the output for the current run (including the path where to save it).
+MoDec will create a folder of this name and save all results in this folder.
+
+
+Additional optional arguments
+* --Kmin 1 and/or --Kmax 6
+To run MoDec searching for motifs between the Kmin value (default is 1) and
+Kmax value (default is 6).
+
+* -L 9 or --Lmotif 9
+To search for motifs of the given length (default is 9).
+
+* --pepLmin 12
+To remove from the input the peptides shorter than this length (default is equal
+to the motif length).
+
+* -r 20 or --nruns 20
+To make this number of runs for the deconvolution with each selected number
+of motifs (default is 20).
+
+* -b 1 or --nruns_out 1
+To output the results from this number of the best runs (by default we just
+output the results from the best run but can also output more). When this is
+used, the standard report.html still contains only the best results while
+another "..._report_multiRuns.html" file is created showing the results from
+the various runs.
+
+* --makeReport
+To make an html report containing the logos found in the best run from each
+number of motifs (need to have installed R and ggseqlogo as described in
+step 3 above).
+
+* -y 3 or --logoYmax 3
+Only useful with --makeReport. To define the max y value for the plots of the
+logos (default is 3).
+
+* --specInits
+To perform the computations based on multiple types of initial condition biases
+(e.g. performing some runs with an hydrophobic preference at P1). This is
+recommended for HLA-II peptidomics to increase the chances of finding the best
+motifs representing the data. When this is used, MoDec will run in fact 5 times
+more runs than what is given by the option --nruns.
+
+* --no_flat_mot
+When used, MoDec will not include a flat motif representing contaminant peptides.
+
+* --out_fullResp, --out_w_ks
+To output some additional files giving the full responsibilities of each peptides
+and the full weight of the motifs.
+
+* --seed 38230811
+To give an initial seed for the random number generator used by MoDec (default
+value is 38230811). When using the seed value 0, MoDec will try using a fully
+random seed or use the current time if such fully random device isn't available.
+
+* --log
+To make that MoDec outputs its logs to a log file created in the result folder
+instead of outputting it to the terminal.
+
+
+
+#################
+OTHER INFORMATION
+#################
+- The files Summary/res_K.._out.txt gives various information, like the
+  parameters used in the current run, the final log-likelihood or a comparison
+  between the motifs (PWM values) found in the various run (of this number
+  of motifs - this comparison is found in the last lines, values correspond
+  to Kullback-Leibler divergences between each motif from the best set of motifs
+  and the set of motifs from each other run).
+
+- The PWMs correspond to the theta^k_l,i from equation (1) of MoDec manuscript.
+  For the flat motif, the PWM has one more position than the motif length: the
+  last position corresponds to the real values used for this flat motif but we
+  also output how this motif would have looked based on the peptides
+  associated to this flat motif (this can be useful to verify if this motif is
+  really flat or not).
+
+- The peptide responsibilities are returned in the 
+  Responsibilities/bestPepResp_....txt files. This gives for each peptide its
+  two best responsibility values indicating to which motif and offset this 
+  corresponds as well as the corresponding core binding sequence.
+  With the option --out_fullResp it is possible to view the complete matrix
+  of the peptide responsiblities (values from each peptide towards each motif
+  and towards each binding core offset).
+
+- The optimal number of motifs is difficult to automatically determine and
+  existing measures provide unsatisfactory results. We use the Akaike
+  Information Criterion (AIC) as a guide but we encourage the users to manually
+  look at the motifs and determine the optimal number (AIC information is found
+  in the html report and in Summary/nMotScores....txt).
+
+- In the html report, the numbers indicated below each logo correspond to the
+  weighed number of peptides associated to this motif (based both on the
+  peptide weights and on the peptide responsibilities). The number in
+  parenthesis next to it is the fraction of peptides assigned to this motif.
+
