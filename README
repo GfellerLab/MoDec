@@ -23,10 +23,10 @@
 INSTALLATION
 ############
 
-1) Download MoDec_1.0.zip file and move it to a directory
+1) Download MoDec-1.0.zip file and move it to a directory
 of your choice, where you have writing permissions.
 
-2) Unzip MoDec_1.0.zip package.
+2) Unzip MoDec-1.0.zip package.
 
 3) (Optional) In order to make an html report of the runs from MoDec and to
   draw the logos from each motifs, you need R and some R-packages:
@@ -39,13 +39,18 @@ of your choice, where you have writing permissions.
       https://cran.r-project.org/web/packages/htmlTable/index.html Command
       to insall from within R:
         install.packages("htmlTable")
+    3d) You then finally need to open the file make_logo_report.R, locate 
+      the line starting with .libPaths in this file and replace the
+      "PATH/TO/R/LIBRARIES" by the path where you installed these R-packages.
 
-4) To test your installation, make sure you are in MoDec_1.0/ directory and run
+4) To test your installation, make sure you are in MoDec-1.0/ directory and run
 the following command, depending on your operating system:
 
   - Mac OS:   ./MoDec -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 4 --makeReport
 
   - Unix:   ./MoDec_unix -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 4 --makeReport
+
+  - Windows:   MoDec.exe -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 4 --makeReport
 
 Running the software can take few minutes depending on data size and number
 of motifs.
@@ -53,14 +58,19 @@ If you didn't do the optional step (3) above, the "--makeReport" option
 shouldn't be used as MoDec won't be able to build this report.
 Your folder test_out should contain the same elements than out_compare folder
 (with few differences about the timing and file location indicated within
-the results files).
+the results files; the motifs found in test_out/test_out_report.html and
+out_compare/test_out_report.html should be highly but there can be small
+differences if MoDec is not run on Mac OS due to the random initial
+conditions that rely on different random number generators in the various
+operating systems).
 
-The testData.txt file corresponds to HLA-II peptidomics data (8715 unique peptides)
-obtained from the cell line CD165 for our study.
+The testData.txt file corresponds to HLA-II peptidomics data (8715 unique
+peptides) obtained from the cell line CD165 for our study.
 
 ######
 - Do not use spaces in your file or directory names.
-- Do not use other special characters (e.g., *, ?, %, &,...) in file or directory names.
+- Do not use other special characters (e.g., *, ?, %, &,...) in file or
+  directory names.
 
 
 5) (Optional) To run MoDec from anywhere on your computer, make an alias of the
@@ -129,6 +139,14 @@ When used, MoDec will not include a flat motif representing contaminant peptides
 * --out_fullResp, --out_w_ks
 To output some additional files giving the full responsibilities of each peptides
 and the full weight of the motifs.
+
+--outAdd
+Normally, MoDec will not run if the folder given in the '--output' argument
+already existed. When this option is used, MoDec will still run. This is to
+take with care: previous results might get overwritten as it is using same
+file names. This option is useful when launching MoDec for different numbers of
+motifs (Kmin, Kmax arguments): in such a case the results won't be overwritten
+as the output has a different name for each number of motifs searched for.
 
 * --seed 38230811
 To give an initial seed for the random number generator used by MoDec (default

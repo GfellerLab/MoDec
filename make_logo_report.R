@@ -17,9 +17,12 @@ sample <- args[1]
 resFolder <- args[2]
 ymax <- as.numeric(args[3])
 
-.libPaths("~/RLibraries")
-# Folder where the custom R libraries are installed (Rscript --vanilla
-# doesn't keep the user environment variables).
+# -+-+-+-+-+-+
+# Indicate below the path where the custom R libraries are installed
+.libPaths("PATH/TO/R/LIBRARIES")
+# .libPaths("~/RLibraries")
+# .libPaths("C:/Users/jracle/OneDrive/Documents/R/win-library/3.5")
+
 library(ggplot2)
 
 methodName <- "MoDec v1.0"
