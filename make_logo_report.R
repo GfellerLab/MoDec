@@ -21,11 +21,8 @@ ymax <- as.numeric(args[3])
 # Indicate below the path where the custom R libraries are installed
 .libPaths("PATH/TO/R/LIBRARIES")
 # .libPaths("~/RLibraries")
-# .libPaths("C:/Users/jracle/OneDrive/Documents/R/win-library/3.5")
 
 library(ggplot2)
-
-methodName <- "MoDec v1.0"
 
 cat("Drawing logos for", sample, "from the folder\n ", resFolder, "\n")
 
@@ -148,7 +145,14 @@ for (cPWM in PWMfiles){
 }
 
 # ########'
-# Now making the html report.
+# Now reading some additional run parameters and making the html report.
+tHeadStr <- paste("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"",
+  "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
+  "<html>\n<head>\n<style type='text/css'>",
+  "div.float {\n\tfloat: left;\n\tmargin-right: 30px;\n\tmargin-left: 30px;\n}",
+  "div.float p {\n\ttext-align: center;\n}",
+  "div.spacer {\n\tclear: both;\n}", "</style>\n</head>\n<body>\n", sep="\n")
+
 n_motifs <- sort(unique(as.numeric(gsub("PWM_K(\\d*)_.*", "\\1", PWMfiles))))
 
 if (any(grepl("_run", PWMfiles))){
@@ -156,17 +160,37 @@ if (any(grepl("_run", PWMfiles))){
   with_report_multiRuns <- TRUE
 } else
   with_report_multiRuns <- FALSE
-tStr <- paste("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"",
-  "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
-  "<html>\n<head>\n<style type='text/css'>",
-  "div.float {\n\tfloat: left;\n\tmargin-right: 30px;\n\tmargin-left: 30px;\n}",
-  "div.float p {\n\ttext-align: center;\n}",
-  "div.spacer {\n\tclear: both;\n}", "</style>\n</head>\n<body>",
-  paste0("<h1>", methodName, " - best results for ", sample,
-    "</h1>"),
-  sep="\n")
 
+
+scoreFile <- paste0(resFolder, "Summary/res_K", n_motifs[1], "_out.txt")
+# The same parameters are used in principle for all runs, so we'll read the
+# values from the first file (but if --outAdd was used, it's possible that
+# different parameter values were used for runs in a same folder; we don't
+# check it here).
+if (file.exists(scoreFile)){
+  tStr_pars <- "<h2>Parameters of the deconvolution</h2>\n<p>"
+
+  temp <- stringr::str_split(readLines(scoreFile), pattern="\t", simplify=T)
+  rownames(temp) <- temp[,1]
+  temp <- temp[,-1,drop=F]
+  methodName <- temp["Results from", 1]
+  params_out <- c("Input peptide file", "Output folder", "n_peptides",
+    "n_weighted_peptides", "pepL_min", "L_motif", "With flat motif",
+    "With special initial conditions", "n_runs_input", "n_runs_real",
+    "randNumbers_seed")
+  tStr_pars <- paste0(tStr_pars,
+    paste(params_out, temp[params_out, 1], sep=": ", collapse="<br>\n"),
+    "<br>\nReport date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "</p>\n")
+} else {
+  warning("Couldn't find a summary score file to determine the run parameters used.")
+  methodName <- "MoDec"
+  tStr_pars <- ""
+}
+
+tStr <- paste0(tHeadStr, "<h1>", methodName, " - best results for ", sample,
+    "</h1>\n", tStr_pars)
 cat(tStr, file=report)
+
 if (with_report_multiRuns)
   cat(gsub("best results for",
     "results from multiple runs with highest log-likelihood for",
@@ -175,8 +199,7 @@ if (with_report_multiRuns)
 nScoreFiles <- list.files(path=paste0(resFolder, "Summary/"),
   pattern="nMotScores", full.names=T)
 if (length(nScoreFiles) > 0){
-  tStr <- "<h2>Information content table"
-  tStr <- paste0(tStr, "</h2>\n")
+  tStr <- "<h2>Information content table</h2>\n"
   cat(tStr, file=report, append=T)
   tData <- lapply(nScoreFiles, FUN=function(cfile){
     nonEmpty <- length(readLines(cfile, n=2)) > 1
@@ -188,15 +211,16 @@ if (length(nScoreFiles) > 0){
   })
   tData <- Reduce(rbind, tData)
   colKept <- c("n", "logL", "AIC")
-  tData <- tData[,colKept]
-  # Keep only the most useful ones.
+  tData <- tData[,colKept] # Keep only the most useful ones.
+  best_n <- which.min(tData[,"AIC"]) # Determine best num of motifs
+  # Make a table of the logL and AIC.
   tData_r <- htmlTable::txtRound(tData, digits=2, excl.cols=1)
+  col.rgroup <- rep_len(c("none", "gray90"), nrow(tData_r))
+  col.rgroup[best_n] <- "seagreen1"
+  tStr <- paste("Best number of motifs (based on AIC):", best_n)
   tTable <- htmlTable::htmlTable(tData_r, rnames=F, align="r",
-    css.cell="padding: 3px 20px", col.rgroup=c("none", "gray90"))
+    css.cell="padding: 3px 20px", col.rgroup=col.rgroup, tfoot=tStr)
   cat(tTable, file=report, append=T)
-  best_n <- which.min(tData[,"AIC"])
-  cat("<h4>Best number of motifs (based on AIC): ", best_n, "</h4>\n",
-    file=report, append=T)
 }
 for (k in n_motifs){
   tStr <- paste0("<h2>", k, " motifs", "</h2>\n")
@@ -208,35 +232,19 @@ for (k in n_motifs){
   scoreFile <- paste0(resFolder, "Summary/res_K", k, "_out.txt")
   if (file.exists(scoreFile)){
     temp <- stringr::str_split(readLines(scoreFile), pattern="\t", simplify=T)
-    n_pep_tot_full <- as.numeric(temp[grep("^n_peptides$", temp[,1]), 2])
     n_pep_tot <- as.numeric(temp[grep("^n_weighted_peptides$", temp[,1]), 2])
-    n_runs <- as.numeric(temp[grep("^n_runs$", temp[,1]), 2])
+    n_runs <- as.numeric(temp[grep("^n_runs_real$", temp[,1]), 2])
     best_score <- as.numeric(temp[grep("^logL_bestRun$", temp[,1]), 2])
     run_scores <- as.numeric(temp[grep("^logL_eachRun", temp[,1]), 1+(1:n_runs)])
   } else {
     warning("The output summary file '", scoreFile, "' wasn't found.")
     n_pep_tot <- sum(c(n_pep_all[paste0("res_K", k, "_PWM_",
       clust_ids)], recursive=T))
-    n_pep_tot_full <- NA
     best_score <- NA
     run_scores <- NA
   }
-  run_sc_tab <- table(run_scores, useNA="ifany")
-  run_sc_tab <- run_sc_tab[order(as.numeric(names(run_sc_tab)), decreasing=T)]
-  tStr <- paste0("<h4>logL_bestRun: ", best_score, " (logL from each run: ",
-    paste(ifelse(run_sc_tab>1, paste0(run_sc_tab, "*"), ""),
-      names(run_sc_tab), sep="", collapse=", "), ")")
-  if (with_report_multiRuns)
-    tStr_multi <- paste0("<h4>Best run (logL: ", best_score)
-  tStr <- paste0(tStr, "<br>N weighted peptides: ", n_pep_tot, " (",
-    n_pep_tot_full, " peptides without weighting)")
-  if (with_report_multiRuns)
-    tStr_multi <- paste0(tStr_multi, "<br>N weighted peptides: ", n_pep_tot,
-      " (", n_pep_tot_full, " peptides without weighting)")
-  tStr <- paste0(tStr, "</h4>\n")
-  cat(tStr, file=report, append=T)
   if (with_report_multiRuns){
-    tStr_multi <- paste0(tStr_multi, ")</h4>\n")
+    tStr_multi <- paste0("<h4>Best run (logL: ", best_score, ")</h4>\n")
     cat(tStr_multi, file=report_multiRuns, append=T)
   }
   for (i in c(clust_ids, 0)){
