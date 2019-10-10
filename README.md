@@ -2,10 +2,10 @@
 
 MoDec is a motif deconvolution software that finds the motifs and corresponding
 binding core offsets desribing the data in a list of peptides. It is described
-in the publication:
+in the publication (available [here](https://www.nature.com/articles/s41587-019-0289-6)):
 
-Racle, J., et al. Robust prediction of class II epitopes by deep motif
-deconvolution of HLA-II peptidomes. *Nat. Biotech.* (2019).
+Racle, J., et al. Robust prediction of HLA class II epitopes by deep motif
+deconvolution of immunopeptidomes. *Nat. Biotech.* (2019).
 
 ## Installation
 
@@ -220,5 +220,5 @@ For license-related questions, please contact Ece Auffarth
 
 To cite MoDec, please refer to:
 
-Racle, J., et al. Robust prediction of class II epitopes by deep motif
-deconvolution of HLA-II peptidomes. *Nat. Biotech.* (2019).
+Racle, J., et al. Robust prediction of HLA class II epitopes by deep motif
+deconvolution of immunopeptidomes. *Nat. Biotech.* (2019).
