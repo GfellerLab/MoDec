@@ -2,17 +2,17 @@
 
 MoDec is a motif deconvolution software that finds the motifs and corresponding
 binding core offsets desribing the data in a list of peptides. It is described
-in the publication (available [here](https://www.nature.com/articles/s41587-019-0289-6)):
+in the publication (available [here](https://www.nature.com/articles/s41587-019-0289-6)):  
 
 Racle, J., et al. Robust prediction of HLA class II epitopes by deep motif
-deconvolution of immunopeptidomes. *Nat. Biotech.* (2019).
+deconvolution of immunopeptidomes. *Nat. Biotechnol.* 37, 1283–1286 (2019).
 
 ## Installation
 
-1) Download MoDec-1.1.zip file and move it to a directory
+1) Download MoDec-1.2.zip file and move it to a directory
 of your choice, where you have writing permissions.
 
-2) Unzip MoDec-1.1.zip package.
+2) Unzip MoDec-1.2.zip package.
 
 3) (Optional) In order to make an html report of the runs from MoDec and to
   draw the logos from each motifs, you need R and some R-packages:
@@ -27,14 +27,14 @@ of your choice, where you have writing permissions.
       the line starting with `.libPaths` in this file and replace the
       `"PATH/TO/R/LIBRARIES"` by the path where you installed these R-packages.
 
-4) To test your installation, make sure you are in *MoDec-1.1* directory and
+4) To test your installation, make sure you are in *MoDec-1.2* directory and
    run the following command, depending on your operating system:
 
-   * Mac OS:   `./MoDec -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 2 --specInits --makeReport`
+   * Mac OS:   `./MoDec -i test/testData.txt -o test/test_out --Kmax 5 --MHC2 --nruns 2 --makeReport`
 
-   * Unix:  `./MoDec_unix -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 2 --specInits --makeReport`
+   * Unix:  `./MoDec_unix -i test/testData.txt -o test/test_out --Kmax 5 --MHC2 --nruns 2 --makeReport`
 
-   * Windows:   `MoDec.exe -i test/testData.txt -o test/test_out --Kmax 5 --pepLmin 12 --nruns 2 --specInits --makeReport`
+   * Windows:   `MoDec.exe -i test/testData.txt -o test/test_out --Kmax 5 --MHC2 --nruns 2 --makeReport`
 
    Running the software can take few minutes depending on data size and number
    of motifs. If you didn't do the optional step (3) above, the `--makeReport`
@@ -44,10 +44,10 @@ of your choice, where you have writing permissions.
    folder (with few differences about the timing and file location indicated
    within the results files; the motifs found in *test_out/test_out_report.html*
    and *out_compare/test_out_report.html* should be highly similar but there can
-   be small differences if MoDec is not run on Mac OS due to the random initial
-   conditions that rely on different random number generators in the various
-   operating systems - note that also the order of the motifs can differ due to
-   these different random number generators).
+   be small differences due to the random initial conditions that rely on
+   different random number generators in the various operating systems - note
+   that also the order of the motifs can differ due to these different random
+   number generators).
 
    The *testData.txt* file corresponds to HLA-II peptidomics data from
    meningioma tissues obtained in our study (sample *3869-GA*, with 5987
@@ -89,6 +89,16 @@ MoDec will create a folder of this name and save all results in this folder.
 
 * `-L 9` or `--Lmotif 9`:
   To search for motifs of the given length (default is 9).
+  A value of 0 makes that we use a motif length equal to the longest peptide
+  from the input data (and all peptides shorter that the longest are removed
+  in this case).
+
+* `--MHC2` or `--MHCII` or `--MHC-II`:
+  This is an option recommended when working on MHC-II / HLA-II peptidomics
+  data, to override some default parameters with those recommended in this
+  case (it is equivalent to using the options `--pepLmin 12 --specInits`). When
+  the options MHC2 and pepLmin are given, the pepLmin option value will have
+  preference.
 
 * `--pepLmin 12`:
   To remove from the input the peptides shorter than this length (default is equal
@@ -131,6 +141,10 @@ MoDec will create a folder of this name and save all results in this folder.
   To output some additional files giving the full responsibilities of each
   peptides and the full weight of the motifs.
 
+* `--no_bestPepResp`:
+  When used, we don't output the file containing the best responsibility from
+  each peptide (by default this file is outputted).
+
 * `--outAdd`:
   Normally, MoDec will not run if the folder given in the `--output` argument
   already existed. When this option is used, MoDec will still run. **This option
@@ -151,6 +165,62 @@ MoDec will create a folder of this name and save all results in this folder.
   To make that MoDec outputs its logs to a log file created in the result folder
   instead of outputting it to the terminal.
 
+* `-k 9` or `--kmer 9`:
+  The kmer size used when comparing input peptides to give weights on each
+  peptide based on the similarity between each of the input peptides. Use a
+  value of 0 if you do not want to give any weight on peptides (default is a
+  value equal to *Lmotif*, which is recommanded for HLA-II peptidomics where
+  many peptides are highly similar, coming from the same protein but often
+  trimmed at other positions).
+
+* `-a ACGT` or `--alphabet ACGT`:
+  The letters allowed in the alphabet. This is used if we want to run MoDec on
+  other letters than the 20 standard amino acids, for example to apply it to
+  nucleotides. By default it corresponds to *ACDEFGHIKLMNPQRSTVWY* but if using
+  the 20 standard AAs, it is better not to use this option because for the moment
+  it would disable some specific settings that are only available in the standard
+  case.
+
+* `-u X` or `--unk_aa X`:
+  Defines the letter used to describe an unknown amino acid in the sequences (by
+  default it is *-*). This should be a single letter, if more than one letter is
+  given, only the first one is used. The unk_aa are treated differently in the
+  computation.
+
+* `-c chemistry` or `--col_scheme chemistry`:
+  Defines the color scheme used by ggseqlogo if making an html report of the
+  results. Available schemes depend on ggseqlogo version, but should include
+  *auto* (default value), *chemistry*, *chemistry2*, *hydrophobicity*,
+  *nucleotide*, *nucleotide2*, *base_pairing*, *clustalx*, *taylor* and *modified*.
+
+* `--theta_norm 1`:
+  Tells which type of background frequency normaization to use for the theta
+  (it tells which type of *f* to use in equation (1) from our paper). For the
+  moment, these values are available:
+  * 0: no normalization, all AA have an equal weight;
+  * 1: estimate of background frequencies in HLA-II peptidomics data (default
+       value, recommended for HLA-II data);
+  * 2: AA frequencies from the human proteome;
+  * 3: AA frequencies computed based on the current dataset - i.e. frequencies
+       from AA found in all peptides from the dataset.
+  * 4: estimate of background frequencies in MHC-II peptidomics data from mice.
+  Note that when the *alphabet* is given, the only possible values are 0 and 3.
+
+* `--flat_freq 2`:
+  Tell which type of frequency to use for the flat motif (corresponds to the
+  *h_i* frequency used for *theta^0_l,i* in equation (1) from our paper). The
+  possible values are the same as for *theta_norm* above (default value is *2*).
+  Note that when the *alphabet* is given, the only possible values are 0 and 3.
+
+* `-S 0`, `--Salign 0`:
+  A switch telling how to count to motif offset *alignment* S, giving more
+  weights to motifs found at similar locations along the sequences:
+  * 0: consider centered motifs independent of peptide size;
+  * 1: count from the N-terminal of the sequences;
+  * 2: count from the C-terminal of the sequences;
+  * 3: do not consider offset preferences, i.e. motifs found anywhere along
+      sequence will have same weight.
+
 ### Results returned and additional information
 
 * MoDec creates a folder containing various files and subfolders with the results.
@@ -162,8 +232,8 @@ MoDec will create a folder of this name and save all results in this folder.
   to Kullback-Leibler divergences between each motif from the best set of motifs
   and the set of motifs from each other run).
 
-* The PWMs correspond to the $\theta^{k}_{l,i}$ from equation (1) of our
-  manuscript.
+* The outputted PWMs (and corresponding logos in the report) correspond to
+  the $\theta^{k}_{l,i}$ from equation (1) of our paper.
 
 * The peptide responsibilities are returned in the
   *Responsibilities/bestPepResp_....txt* files. This gives for each peptide its
@@ -180,22 +250,16 @@ MoDec will create a folder of this name and save all results in this folder.
   in the html report and in *Summary/nMotScores....txt*).
 
 * In the html report, the numbers indicated below each logo correspond to the
-  weighed number of peptides associated to this motif (based both on the
-  peptide weights and on the peptide responsibilities). The number in
-  parenthesis next to it is the fraction of peptides assigned to this motif.
+  number of peptides associated to this motif (assigning here each peptide
+  to the motif towards which this peptide had its best responsibility value).
+  The number in parenthesis next to it is the fraction of peptides assigned to
+  this motif.
 
-* The PWM and logo of the flat motif is also returned by MoDec. Note however
-  that these have one extra position with respect to the other PWMs and the
-  requested motif length (i.e. it has a length of 10 when the default
-  `--Lmotif 9` was asked): the last position corresponds to the real
-  values used for this flat motif in the deconvolution, and the other *Lmotif*
-  first positions correspond to how this motif would have looked based on the
-  peptides associated to this flat motif (this can be for example useful in
-  order to verify if this motif is really flat or not).
+* The PWMs and logos of the flat motifs are also returned by MoDec.
 
 ## Latest version
 
-Latest version of MoDec is available at <https://github.com/GfellerLab/MoDec>.
+Latest version of MoDec is available at <https://github.com/GfellerLab/MoDec/releases>.
 
 ## License
 
@@ -203,9 +267,9 @@ MoDec can be used freely by academic groups for non-commercial purposes (see
 the license file). The product is provided free of charge, and, therefore, on
 an "as is" basis, without warranty of any kind.
 
-**FOR-PROFIT USERS**: If you plan to use MoDec (version 1.1) or any data
+**FOR-PROFIT USERS**: If you plan to use MoDec (version 1.2) or any data
 provided with the script in any for-profit application, you are required to
-obtain a separate license. To do so, please contact <eauffarth@licr.org> at the
+obtain a separate license. To do so, please contact <nbulgin@lcr.org> at the
 Ludwig Institute for Cancer Research Ltd.
 
 ## Contact information
@@ -213,12 +277,12 @@ Ludwig Institute for Cancer Research Ltd.
 For scientific questions, please contact Julien Racle (<julien.racle@unil.ch>)
 or David Gfeller (<david.gfeller@unil.ch>).
 
-For license-related questions, please contact Ece Auffarth
-(<eauffarth@licr.org>).
+For license-related questions, please contact Nadette Bulgin
+(<nbulgin@lcr.org>).
 
 ## How to cite
 
 To cite MoDec, please refer to:
 
 Racle, J., et al. Robust prediction of HLA class II epitopes by deep motif
-deconvolution of immunopeptidomes. *Nat. Biotech.* (2019).
+deconvolution of immunopeptidomes. *Nat. Biotechnol.* 37, 1283–1286 (2019).

@@ -1,36 +1,43 @@
-Results from	MoDec v1.1
-Run started on	2019-08-29 14:13:59
+Results from	MoDec v1.2
+Run started on	2022-11-25 12:45:14
 Input peptide file	test/testData.txt
 Output folder	test/test_out/
+n_motifs	1
+With flat motif	1
+L_motif	9
+pepL_min	12
 n_peptides	5790
 n_weighted_peptides	1923.25
-pepL_min	12
-n_motifs	1
-L_motif	9
-With flat motif	1
+Peptide weighting (kmer_size)	9
+n_aa	20
+alphabet	ACDEFGHIKLMNPQRSTVWY
+unk_aa	-
+Theta normalization type	1
+Flat motif frequency type	2
+With specInits	1
+Alignment	Centered
 S_max	17
 alpha_prior	0.1
-With special initial conditions	1
 randNumbers_seed	38230811
 n_runs_input	2
 n_runs_real	10
 dLogL_conv	0.001
-n_iterations_perRun	124	129	130	135	134	135	131	133	128	134
-Total runtime	4.77 seconds
+n_iterations_perRun	129	132	129	131	128	129	136	133	131	129
+Total runtime	4.31 seconds
 
-logL_bestRun	3681.119
-logL_eachRun (decreasing order)	3681.119	3681.117	3681.117	3681.117	3681.117	3681.117	3681.116	3681.116	3681.116	3681.116
-n_weighted_pep_per_motif_bestRun	1762.091
-n_weighted_pep_flatMotif_bestRun	161.1636
+logL_bestRun	3681.118
+logL_eachRun (decreasing order)	3681.118	3681.118	3681.117	3681.117	3681.117	3681.116	3681.116	3681.116	3681.116	3681.116
+n_pep_per_motif_bestRun	5611
+n_pep_flatMotif_bestRun	179
 
 runRank|motif_crun_vs_best	1_0	1_1
 1	3.4	0
-2	3.4	7.82e-08
-3	3.4	1.75e-09
-4	3.4	6.51e-08
-5	3.4	7.57e-08
-6	3.4	4.35e-08
-7	3.4	5.68e-08
-8	3.4	3.71e-08
-9	3.4	5.42e-08
-10	3.4	4.01e-08
+2	3.4	7.42e-08
+3	3.4	9.83e-08
+4	3.4	6.39e-08
+5	3.4	1.4e-08
+6	3.4	5.45e-08
+7	3.4	2.63e-08
+8	3.4	3.52e-08
+9	3.4	3.28e-08
+10	3.4	3.4e-08

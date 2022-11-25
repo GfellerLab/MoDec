@@ -10,12 +10,18 @@
 #     note however that if the logos go beyond this value a new y-max will
 #     be set for the given logo to still see it fully). Can also use a value
 #     of 0 to use different values for each logo based on its data.
+#   4) The color scheme to use for the logos. (default to "auto").
 
 # Getting input arguments -------------------------------------------------
 args <- commandArgs(trailingOnly=T)
 sample <- args[1]
 resFolder <- args[2]
 ymax <- as.numeric(args[3])
+if (length(args) >= 4){
+  col_scheme <- args[4]
+} else {
+  col_scheme <- "auto"
+}
 
 # -+-+-+-+-+-+
 # Indicate below the path where the custom R libraries are installed
@@ -50,7 +56,7 @@ cat("Drawing logos for", sample, "from the folder\n ", resFolder, "\n")
 #' @import ggplot2
 #'
 #' @export
-seq_logo <- function( data, smallSampleCorr = T, col_scheme = 'chemistry',
+seq_logo <- function( data, smallSampleCorr = T, col_scheme = 'auto',
   legendText = FALSE, ylim = c(0,4.32),
   title = NULL, titleSize = 18, titlePos = 0.5,
   axisTextSizeX = 12, axisTextSizeY = 12, axisTitleSize = 14,
@@ -137,11 +143,20 @@ for (cPWM in PWMfiles){
   n_pep_all[[cPWM]] <- n_pep
   figFile <- paste0(subFolder_fullPath, cPWM, "-", round(n_pep), ".png")
   tPWM <- as.matrix(read.delim(cPWM_fullPath, skip=1, row.names=1))
-  tplot <- seq_logo(tPWM, ylim=ylim)
+  tplot <- seq_logo(tPWM, ylim=ylim, col_scheme=col_scheme)
   if ((! (is.na(ymax) || ymax==0) )  &&
       (max(ggplot2::ggplot_build(tplot)$data[[1]]$y) > ymax))
     tplot <- suppressMessages(tplot + ggplot2::coord_cartesian(expand=F))
+  if (ncol(tPWM) < 30){
   ggplot2::ggsave(figFile, width=6, height=4, units="in", dpi=c_dpi)
+  } else {
+    # For very long logos (i.e. big L_motif), we use other figure dimensions to
+    # make the letters more visible and we rotate the x-axis labels.
+    tplot <- tplot + ggplot2::theme(axis.text.x=element_text(angle=90, hjust=1))
+    ggplot2::ggsave(figFile, width=ncol(tPWM)/5, height=4, units="in", dpi=c_dpi,
+      limitsize=F)
+    # limitsize is used so that ggplot doesn't complain for big figure dimensions.
+  }
 }
 
 # ########'
@@ -171,16 +186,16 @@ if (file.exists(scoreFile)){
   tStr_pars <- "<h2>Parameters of the deconvolution</h2>\n<p>"
 
   temp <- stringr::str_split(readLines(scoreFile), pattern="\t", simplify=T)
-  rownames(temp) <- temp[,1]
-  temp <- temp[,-1,drop=F]
-  methodName <- temp["Results from", 1]
-  params_out <- c("Input peptide file", "Output folder", "n_peptides",
-    "n_weighted_peptides", "pepL_min", "L_motif", "With flat motif",
-    "With special initial conditions", "n_runs_input", "n_runs_real",
-    "randNumbers_seed")
+  methodName <- temp[1, 2]
+  param_remove <- c("n_motifs")
+  # This value is different in each summary file and is already visible from
+  # the motifs showed so we won't put it in the param summary header.
+  temp <- temp[! (temp[,1]  %in% param_remove),]
+  params_lastRow <- which(temp[,1] == "dLogL_conv")
+
   tStr_pars <- paste0(tStr_pars,
-    paste(params_out, temp[params_out, 1], sep=": ", collapse="<br>\n"),
-    "<br>\nReport date: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "</p>\n")
+    paste(apply(temp[2:params_lastRow,], MARGIN=1, FUN=function(x){
+      paste(x[x!=""], collapse=": ")}),  collapse="<br>\n"), "</p>\n")
 } else {
   warning("Couldn't find a summary score file to determine the run parameters used.")
   methodName <- "MoDec"
@@ -214,7 +229,7 @@ if (length(nScoreFiles) > 0){
   tData <- tData[,colKept] # Keep only the most useful ones.
   best_n <- which.min(tData[,"AIC"]) # Determine best num of motifs
   # Make a table of the logL and AIC.
-  tData_r <- htmlTable::txtRound(tData, digits=2, excl.cols=1)
+  tData_r <- htmlTable::txtRound(as.matrix(tData), digits=2, excl.cols="^n$")
   col.rgroup <- rep_len(c("none", "gray90"), nrow(tData_r))
   col.rgroup[best_n] <- "seagreen1"
   tStr <- paste("Best number of motifs (based on AIC):", best_n)
@@ -232,7 +247,7 @@ for (k in n_motifs){
   scoreFile <- paste0(resFolder, "Summary/res_K", k, "_out.txt")
   if (file.exists(scoreFile)){
     temp <- stringr::str_split(readLines(scoreFile), pattern="\t", simplify=T)
-    n_pep_tot <- as.numeric(temp[grep("^n_weighted_peptides$", temp[,1]), 2])
+    n_pep_tot <- as.numeric(temp[grep("^n_peptides$", temp[,1]), 2])
     n_runs <- as.numeric(temp[grep("^n_runs_real$", temp[,1]), 2])
     best_score <- as.numeric(temp[grep("^logL_bestRun$", temp[,1]), 2])
     run_scores <- as.numeric(temp[grep("^logL_eachRun", temp[,1]), 1+(1:n_runs)])

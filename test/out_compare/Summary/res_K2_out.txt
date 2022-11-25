@@ -1,36 +1,43 @@
-Results from	MoDec v1.1
-Run started on	2019-08-29 14:14:04
+Results from	MoDec v1.2
+Run started on	2022-11-25 12:45:19
 Input peptide file	test/testData.txt
 Output folder	test/test_out/
+n_motifs	2
+With flat motif	1
+L_motif	9
+pepL_min	12
 n_peptides	5790
 n_weighted_peptides	1923.25
-pepL_min	12
-n_motifs	2
-L_motif	9
-With flat motif	1
+Peptide weighting (kmer_size)	9
+n_aa	20
+alphabet	ACDEFGHIKLMNPQRSTVWY
+unk_aa	-
+Theta normalization type	1
+Flat motif frequency type	2
+With specInits	1
+Alignment	Centered
 S_max	17
 alpha_prior	0.1
-With special initial conditions	1
 randNumbers_seed	38230811
 n_runs_input	2
 n_runs_real	10
 dLogL_conv	0.001
-n_iterations_perRun	116	123	124	131	121	120	129	143	144	139
-Total runtime	8.55 seconds
+n_iterations_perRun	132	128	133	126	121	132	147	138	138	126
+Total runtime	9.14 seconds
 
 logL_bestRun	4961.649
-logL_eachRun (decreasing order)	4961.649	4961.649	4961.649	4961.648	4961.648	4961.648	4961.648	4616.545	4616.545	4616.545
-n_weighted_pep_per_motif_bestRun	642.9417	1141.649
-n_weighted_pep_flatMotif_bestRun	138.6637
+logL_eachRun (decreasing order)	4961.649	4961.649	4961.649	4961.648	4961.648	4961.648	4616.545	4616.545	4616.545	4398.678
+n_pep_per_motif_bestRun	3594	2013
+n_pep_flatMotif_bestRun	183
 
 runRank|motif_crun_vs_best	1_0	1_1	1_2	2_0	2_1	2_2
-1	5.02	0	9.66	4.63	6.8	0
-2	4.63	6.8	5.8e-09	5.02	1.91e-08	9.66
-3	5.02	1.94e-08	9.66	4.63	6.8	5.89e-09
-4	5.02	2.38e-08	9.66	4.63	6.8	6.67e-09
-5	4.63	6.8	2.06e-09	5.02	6.92e-09	9.66
-6	5.02	1.67e-08	9.66	4.63	6.8	5.05e-09
-7	4.63	6.8	9.97e-09	5.02	3.4e-08	9.66
-8	4.63	6.74	0.00742	4.13	13.7	13.8
-9	4.63	6.74	0.00742	4.13	13.7	13.8
-10	4.63	6.74	0.00742	4.13	13.7	13.8
+1	4.63	0	6.8	5.02	9.66	0
+2	5.02	9.66	1.15e-10	4.63	3.52e-11	6.8
+3	4.63	1.77e-10	6.8	5.02	9.66	8.67e-10
+4	5.02	9.66	1.74e-08	4.63	5.54e-09	6.8
+5	4.63	6.97e-09	6.8	5.02	9.66	2.23e-08
+6	4.63	1.16e-08	6.8	5.02	9.66	3.94e-08
+7	4.63	0.00742	6.74	4.13	13.8	13.7
+8	4.63	0.00742	6.74	4.13	13.8	13.7
+9	4.63	0.00742	6.74	4.13	13.8	13.7
+10	3.82	3.35	2.21	5.96	1.76	9.72
