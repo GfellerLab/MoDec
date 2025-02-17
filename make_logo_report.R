@@ -33,9 +33,9 @@ library(ggplot2)
 cat("Drawing logos for", sample, "from the folder\n ", resFolder, "\n")
 
 # Defining the function making individual logos based on my visual preferences ----------------------
-#' Creating a sequence logo with help of ggseqlogo.
+#' Creating a sequence logo with help of ggseqlogoMOD.
 #'
-#' This is some intermediate function calling ggseqlogo (the forked version found
+#' This is some intermediate function calling ggseqlogoMOD (the forked version found
 #' at https://github.com/GfellerLab/ggseqlogo), and some default parameters
 #' have been changed to adapt the visual output.
 #'
@@ -59,7 +59,7 @@ cat("Drawing logos for", sample, "from the folder\n ", resFolder, "\n")
 seq_logo <- function( data, smallSampleCorr = T, col_scheme = 'auto',
   legendText = FALSE, ylim = c(0,4.32),
   title = NULL, titleSize = 18, titlePos = 0.5,
-  axisTextSizeX = 12, axisTextSizeY = 12, axisTitleSize = 14,
+  axisTextSizeX = 18, axisTextSizeY = 18, axisTitleSize = 22,
   seq_type = 'aa', font = 'helvetica_bold', ...){
 
   if (typeof(data) == "character") {
@@ -73,13 +73,13 @@ seq_logo <- function( data, smallSampleCorr = T, col_scheme = 'auto',
   p = ggplot() +
 
     #### do the plotting of the sequence logo
-    ggseqlogo::geom_logo(data=data, col_scheme=col_scheme,
+    ggseqlogoMOD::geom_logo(data=data, col_scheme=col_scheme,
       smallSampleCorr=smallSampleCorr, font=font, legendText=legendText, ...) +
 
     #### size of title, size of x and y tick marks, size of y axis description
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      panel.background = element_blank(), axis.line = element_line(colour = "black", size = 0.5),
-      axis.ticks = element_line(colour = 'black', size = 0.5),
+      panel.background = element_blank(), axis.line = element_line(colour = "black", linewidth = 0.5),
+      axis.ticks = element_line(colour = 'black', linewidth = 0.5),
       plot.title = element_text(size=titleSize, hjust=titlePos, vjust = 0.1, family="sans"),
       axis.text.x = element_text(size=axisTextSizeX, color = 'black', family="sans"),
       axis.text.y = element_text(size=axisTextSizeY, color = 'black', family="sans"),
@@ -94,8 +94,15 @@ seq_logo <- function( data, smallSampleCorr = T, col_scheme = 'auto',
     #### add title if given
     ggtitle(title)
 
+  if (lengthP < 20){
+    x_breaks <- 1:lengthP
+  } else {
+    x_breaks <- seq(from=1, to=lengthP, by=5)
+    # Don't show all breaks as otherwise they aren't well visible
+  }
+
   p <- suppressMessages(p +
-      scale_x_continuous(breaks = seq(1, lengthP, 1), expand=c(0,0)))
+      scale_x_continuous(breaks = x_breaks, expand=c(0,0)))
 
   return(p)
 }
@@ -132,7 +139,7 @@ if (grepl("Darwin", Sys.info()["sysname"])){
   # totally correctly used there...).
 }
 
-# First creating all the logos with ggseqlogo
+# First creating all the logos with ggseqlogoMOD
 PWMfiles <- gsub(".txt", "", list.files(path=paste0(resFolder, "PWMs"),
   pattern="PWM_"))
 n_pep_all <- list()

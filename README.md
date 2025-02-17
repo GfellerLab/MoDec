@@ -17,9 +17,9 @@ of your choice, where you have writing permissions.
 3) (Optional) In order to make an html report of the runs from MoDec and to
   draw the logos from each motifs, you need R and some R-packages:
    1. Rscript needs to be in your path.
-   2. You need to install the R-package *ggseqlogo*, based on the fork
-      found at <https://github.com/GfellerLab/ggseqlogo>.
-      For this, from within R, type the command: `devtools::install_github("gfellerlab/ggseqlogo")`
+   2. You need to install the R-package *ggseqlogoMOD*, based on the fork from
+      *ggseqlogo* found at <https://github.com/GfellerLab/ggseqlogo>.
+      For this, from within R, type the command: `remotes::install_github("gfellerlab/ggseqlogo")`.
    3. You also need the R-package *htmlTable* that can be found at
       <https://cran.r-project.org/web/packages/htmlTable/index.html>. Command
       to install from within R: `install.packages("htmlTable")`
@@ -27,7 +27,7 @@ of your choice, where you have writing permissions.
       the line starting with `.libPaths` in this file and replace the
       `"PATH/TO/R/LIBRARIES"` by the path where you installed these R-packages.
 
-4) To test your installation, make sure you are in *MoDec-1.2* directory and
+1) To test your installation, make sure you are in *MoDec-1.2* directory and
    run the following command, depending on your operating system:
 
    * Mac OS:   `./MoDec -i test/testData.txt -o test/test_out --Kmax 5 --MHC2 --nruns 2 --makeReport`
@@ -53,7 +53,7 @@ of your choice, where you have writing permissions.
    meningioma tissues obtained in our study (sample *3869-GA*, with 5987
    unique peptides).
 
-5) (Optional) To run MoDec from anywhere on your computer, make an alias of
+2) (Optional) To run MoDec from anywhere on your computer, make an alias of
    MoDec executable (see above for which one depending on operating system) or
    add it in your path.
 
@@ -127,7 +127,7 @@ MoDec will create a folder of this name and save all results in this folder.
 
 * `--makeReport`:
   To make an html report containing the logos found in the best run from each
-  number of motifs (need to have R installed and *ggseqlogo* as described in
+  number of motifs (need to have R installed and *ggseqlogoMOD* as described in
   step 3 above).
 
 * `-y 3` or `--logoYmax 3`:
@@ -188,10 +188,10 @@ MoDec will create a folder of this name and save all results in this folder.
   computation.
 
 * `-c chemistry` or `--col_scheme chemistry`:
-  Defines the color scheme used by ggseqlogo if making an html report of the
-  results. Available schemes depend on ggseqlogo version, but should include
-  *auto* (default value), *chemistry*, *chemistry2*, *hydrophobicity*,
-  *nucleotide*, *nucleotide2*, *base_pairing*, *clustalx*, *taylor* and *modified*.
+  Defines the color scheme used by ggseqlogoMOD if making an html report of the
+  results. Available schemes should include *auto* (default value),
+  *chemistry*, *chemistry2*, *hydrophobicity*, *nucleotide*, *nucleotide2*,
+  *base_pairing*, *clustalx*, *taylor* and *modified*.
 
 * `--theta_norm 1`:
   Tells which type of background frequency normaization to use for the theta

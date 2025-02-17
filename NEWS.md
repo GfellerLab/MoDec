@@ -1,5 +1,14 @@
 # Release notes from MoDec
 
+## Version 1.2.1 (17.02.2025)
+
+* Changes only to the Rscript *make_logo_report.R* (and README files) to indicate
+  to use ggseqlogoMOD instead of ggseqlogo following a rename of this forked
+  package.
+* Changes in this Rscript also increased the font size of the axes of the logo
+  plots, and corrected a ggplot2 parameter name, removing some related
+  deprecation warning message.
+
 ## Version 1.2 (23.11.2022)
 
 * Added optional arguments `MHC2`, `no_bestPepResp`, `kmer`, `alphabet`,
